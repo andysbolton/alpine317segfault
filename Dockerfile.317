@@ -4,13 +4,12 @@ WORKDIR /app
 
 COPY . .
 
+RUN dotnet publish -c Release -o pub
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0.13-alpine3.17
+
 WORKDIR /app
-RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0.13-alpine3.17 AS runtime
+COPY --from=build /app/pub ./
 
-WORKDIR /app
-
-COPY --from=build /app/out ./
-
-CMD ["dotnet", "alpine317segfault.dll"]
+ENTRYPOINT ["dotnet", "alpine317segfault.dll"]
